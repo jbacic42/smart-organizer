@@ -176,7 +176,7 @@ class FileOrganizer:
         on the selected single organization mode.
 
         Args:
-            sort_mode (str): "By Extension", "By Time", or "By Keyword".
+            sort_mode (str): "Extension", "Time", or "Keyword".
             granularity (str): Time granularity ("Year", "Month", etc.).
             keyword_rules (str): User-defined keyword rule string.
             folder_rules (str): User-defined folder rule string.
@@ -188,7 +188,7 @@ class FileOrganizer:
         
         # --- 1. Prepare Rules ---
         keyword_map = {}
-        if sort_mode == "By Keyword":
+        if sort_mode == "Keyword":
             keyword_map = self._build_keyword_map(keyword_rules, folder_rules)
             if not keyword_map:
                 raise ValueError("No valid keyword rules were provided.")
@@ -210,8 +210,8 @@ class FileOrganizer:
         # --- 3. Process Files ---
         for index, item in enumerate(files_to_process):
             
-            # --- Mode 1: By Keyword ---
-            if sort_mode == "By Keyword":
+            # --- Mode 1: Keyword ---
+            if sort_mode == "Keyword":
                 file_moved = False
                 for key, folder_name in keyword_map.items():
                     if key in item.name.lower():
@@ -220,8 +220,8 @@ class FileOrganizer:
                         file_moved = True
                         break # Keyword found, move to next file
                 
-            # --- Mode 2: By Time ---
-            elif sort_mode == "By Time":
+            # --- Mode 2: Time ---
+            elif sort_mode == "Time":
                 try:
                     m_time = datetime.fromtimestamp(item.stat().st_mtime)
                     time_folder_path = None # Use Path object
@@ -275,8 +275,8 @@ class FileOrganizer:
                 except Exception as e:
                     self.logger.error(f"Error processing time for {item.name}: {e}")
             
-            # --- Mode 3: By Extension (Default) ---
-            elif sort_mode == "By Extension":
+            # --- Mode 3: Extension (Default) ---
+            elif sort_mode == "Extension":
                 extension = item.suffix
                 ext_folder_name = extension[1:].lower() if extension else "other"
                 dest_folder = self.source_directory / ext_folder_name
@@ -475,10 +475,10 @@ class FileOrganizerGUI:
         sort_label.pack(side=tk.LEFT, padx=5)
         self.sort_mode_combo = ttk.Combobox(sort_mode_frame, 
                                        textvariable=self.sort_mode,
-                                       values=["By Extension", "By Time", "By Keyword"],
+                                       values=["Extension", "Time", "Keyword"],
                                        state='readonly')
         self.sort_mode_combo.pack(fill=tk.X, expand=True, padx=5)
-        self.sort_mode.set("By Extension")
+        self.sort_mode.set("Extension")
         self.sort_mode_combo.bind('<<ComboboxSelected>>', self._on_sort_mode_changed)
 
         # --- Dynamic Options Container ---
@@ -548,11 +548,11 @@ class FileOrganizerGUI:
         self.extension_options_frame.pack_forget()
         
         # Show the relevant frame
-        if mode == "By Time":
+        if mode == "Time":
             self.time_options_frame.pack(fill=tk.BOTH, expand=True)
-        elif mode == "By Keyword":
+        elif mode == "Keyword":
             self.keyword_options_frame.pack(fill=tk.BOTH, expand=True)
-        elif mode == "By Extension":
+        elif mode == "Extension":
             self.extension_options_frame.pack(fill=tk.BOTH, expand=True)
 
     def _toggle_controls(self, enabled):
