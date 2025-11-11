@@ -80,6 +80,3 @@ The runtime dependencies for this project are:
 pillow==12.0.0 ttkthemes==3.3.0
 ---
 
-## Requirements
-
-The runtime dependencies for this project are:
